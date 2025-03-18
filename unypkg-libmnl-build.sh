@@ -35,13 +35,13 @@ mkdir -pv /uny/sources
 cd /uny/sources || exit
 
 pkgname="libmnl"
-pkggit="https://github.com/libmnl/libmnl.git refs/tags/*"
+pkggit="https://git.netfilter.org/libmnl refs/tags/*"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
 # shellcheck disable=SC2086
-latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "v[0-9.]+$" | tail --lines=1)"
-latest_ver="$(echo "$latest_head" | grep -o "v[0-9.].*" | sed "s|v||")"
+latest_head="$(git ls-remote --refs --tags --sort="v:refname" $pkggit | grep -E "libmnl-[0-9.]+$" | tail --lines=1)"
+latest_ver="$(echo "$latest_head" | grep -o "libmnl-[0-9.].*" | sed "s|libmnl-||")"
 latest_commit_id="$(echo "$latest_head" | cut --fields=1)"
 
 version_details
@@ -77,11 +77,12 @@ get_include_paths
 
 unset LD_RUN_PATH
 
+sh autogen.sh
+
 ./configure \
     --prefix=/uny/pkg/"$pkgname"/"$pkgver"
 
 make -j"$(nproc)"
-make -j"$(nproc)" check 
 make -j"$(nproc)" install
 
 ####################################################
